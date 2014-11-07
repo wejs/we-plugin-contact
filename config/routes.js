@@ -54,7 +54,7 @@ module.exports.routes = {
     action        : 'deleteContact'
   },
 
-  'get /api/v1/contact': {
+  'get /contact': {
       controller    : 'ContactController',
       action        : 'getAllAuthenticatedUserContacts'
   }
