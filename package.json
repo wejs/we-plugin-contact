@@ -1,7 +1,7 @@
 {
   "name": "we-plugin-contact",
   "description": "We.js plugin we-plugin-contact",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "license": "MIT",
   "main": "lib/index.js",
   "dependencies": {
@@ -26,11 +26,6 @@
     "posttest": "./node_modules/.bin/istanbul check-coverage && rm -rf coverage",
     "prepublish": "npm prune"
   },
-  "files": [
-    "api",
-    "config",
-    "lib"
-  ],
   "keywords": [
     "we.js",
     "wejs",
