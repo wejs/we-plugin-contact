@@ -4,6 +4,7 @@
  * @description ::
  * @docs        :: http://sailsjs.org/#!documentation/controllers
  */
+var  _ = require('lodash');
 
 module.exports = {
   _config: {
@@ -109,7 +110,7 @@ module.exports = {
         });
 
         // notify
-        sails.emit('we:model:contact:requested', contact, req.user);
+        sails.emit('we:model:contact:requested', contact, _.clone(req.user), contactUser);
         // send result
         res.send(201,{contact: contact});
       });
