@@ -71,40 +71,56 @@ module.exports = {
    * Request contact relationship
    */
   requestContact: function requestContact (req, res) {
-    if(!req.user.id) return res.forbiden();
+    if(!req.isAuthenticated()) return res.forbiden();
+
+    var sails = req._sails;
+    var Contact = sails.models.contact;
+    var User = sails.models.user;
 
     var uid = req.user.id;
     var contactId = req.param('contactId');
 
-    Contact.create({
-      from: uid,
-      to: contactId
+    User.findOneById(contactId).exec(function(err, contactUser) {
+      if(err) {
+        sails.log.error('requestContact: Error on findUserById', err);
+        return res.serverError(err);
+      }
+      // contact not found or contactId is invalid
+      if (!contactUser) return res.notFound();
+
+      Contact.create({
+        from: uid,
+        to: contactId
+      })
+      .exec(function(err, contact){
+        if(err) return res.negotiate(err);
+
+        // emit to user
+        sails.io.sockets.in('user_' + contact.to).emit('contact', {
+          id: contact.id,
+          verb: 'created',
+          data: contact
+        });
+        // emit to other logged in user for sync status
+        sails.io.sockets.in('user_' + contact.from).emit('contact', {
+          id: contact.id,
+          verb: 'created',
+          data: contact
+        });
+
+        // notify
+        sails.emit('we:model:contact:requested', contact, req.user);
+        // send result
+        res.send(201,{contact: contact});
+      });
     })
-    .exec(function(err, contact){
-      if(err) return res.negotiate(err);
-
-      // emit to user
-      sails.io.sockets.in('user_' + contact.to).emit('contact', {
-        id: contact.id,
-        verb: 'created',
-        data: contact
-      });
-      // emit to other logged in user for sync status
-      sails.io.sockets.in('user_' + contact.from).emit('contact', {
-        id: contact.id,
-        verb: 'created',
-        data: contact
-      });
-
-      // notify
-      sails.emit('we:model:contact:requested', contact, req.user);
-      // send result
-      res.send(201,{contact: contact});
-    });
   },
 
   acceptContact: function acceptContact (req, res) {
-    if(!req.user.id) return res.forbiden();
+    if(!req.isAuthenticated()) return res.forbiden();
+
+    var sails = req._sails;
+    var Contact = sails.models.contact;
 
     var uid = req.user.id;
     var contactId = req.param('contactId');
@@ -145,7 +161,7 @@ module.exports = {
   },
 
   ignoreContact: function ignoreContact (req, res) {
-    if(!req.user.id) return res.forbiden();
+    if(!req.isAuthenticated()) return res.forbiden();
 
     var uid = req.user.id;
     var contactId = req.param('contactId');
@@ -176,7 +192,7 @@ module.exports = {
   },
 
   deleteContact: function deleteContact (req, res) {
-    if(!req.user.id) return res.forbiden();
+    if(!req.isAuthenticated()) return res.forbiden();
 
     var uid = req.user.id;
     var contactId = req.param('contactId');
