@@ -16,39 +16,45 @@ module.exports = {
 
     var userId = req.user.id;
 
-    Contact.find()
-    .where({
-      or: [
-        {
-          from: userId
-        },
-        {
-          to: userId
-        }
-      ],
-      status: 'accepted'
-    })
-    .exec(function(err, contacts){
-      if (err) return res.negotiate(err);
+    var sql = 'SELECT c.to AS id, u.username AS name FROM contact AS c JOIN user u ON c.to = u.id WHERE c.from = ' + userId + ' AND status = "accepted" GROUP BY u.id';
 
-      // if has online users check how are online in current user contact list
-      if ( sails.onlineusers ) {
-        for (var i = contacts.length - 1; i >= 0; i--) {
-
-          if ( contacts[i].from == userId ) {
-            if( sails.onlineusers[contacts[i].to] ) {
-              contacts[i].onlineStatus = 'online';
-            }
-          } else {
-            if( sails.onlineusers[contacts[i].from] ) {
-              contacts[i].onlineStatus = 'online';
-            }
-          }
-        }
-      }
-
+    Contact.query(sql, function (req, contacts) {
       return res.send({contact: contacts});
     });
+
+    // Contact.find()
+    // .where({
+    //   or: [
+    //     {
+    //       from: userId
+    //     },
+    //     {
+    //       to: userId
+    //     }
+    //   ],
+    //   status: 'accepted'
+    // })
+    // .exec(function(err, contacts){
+    //   if (err) return res.negotiate(err);
+
+    //   // if has online users check how are online in current user contact list
+    //   if ( sails.onlineusers ) {
+    //     for (var i = contacts.length - 1; i >= 0; i--) {
+
+    //       if ( contacts[i].from == userId ) {
+    //         if( sails.onlineusers[contacts[i].to] ) {
+    //           contacts[i].onlineStatus = 'online';
+    //         }
+    //       } else {
+    //         if( sails.onlineusers[contacts[i].from] ) {
+    //           contacts[i].onlineStatus = 'online';
+    //         }
+    //       }
+    //     }
+    //   }
+
+    //   return res.send({contact: contacts});
+    // });
   },
 
   findOneUserContact: function(req, res) {
