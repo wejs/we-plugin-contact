@@ -16,9 +16,10 @@ module.exports = {
 
     var userId = req.user.id;
 
-    var sql = 'SELECT c.to AS id, u.username AS name FROM contact AS c JOIN user u ON c.to = u.id WHERE c.from = ' + userId + ' AND status = "accepted" GROUP BY u.id';
+    var sql = 'SELECT c.*, u.id AS user_id, u.username AS name FROM contact AS c JOIN user u ON c.to = u.id WHERE (c.from = ' + userId + ' OR c.to = ' + userId + ') AND status = "accepted" GROUP BY u.id';
 
     Contact.query(sql, function (req, contacts) {
+      sails.log(contacts);
       return res.send({contact: contacts});
     });
 
