@@ -14,48 +14,42 @@ module.exports = {
   getAllAuthenticatedUserContacts: function(req, res) {
     if(!req.isAuthenticated()) return res.forbidden();
 
+    var sails = req._sails;
     var userId = req.user.id;
 
-    var sql = 'SELECT c.*, u.id AS user_id, u.username AS name FROM contact AS c JOIN user u ON c.to = u.id WHERE (c.from = ' + userId + ' OR c.to = ' + userId + ') AND status = "accepted" GROUP BY u.id';
+    sails.models.contact.find()
+    .where({
+      or: [
+        {
+          from: userId
+        },
+        {
+          to: userId
+        }
+      ],
+      status: 'accepted'
+    })
+    .exec(function(err, contacts){
+      if (err) return res.negotiate(err);
 
-    Contact.query(sql, function (req, contacts) {
-      sails.log(contacts);
+      // if has online users check how are online in current user contact list
+      if ( sails.onlineusers ) {
+        for (var i = contacts.length - 1; i >= 0; i--) {
+
+          if ( contacts[i].from == userId ) {
+            if( sails.onlineusers[contacts[i].to] ) {
+              contacts[i].onlineStatus = 'online';
+            }
+          } else {
+            if( sails.onlineusers[contacts[i].from] ) {
+              contacts[i].onlineStatus = 'online';
+            }
+          }
+        }
+      }
+
       return res.send({contact: contacts});
     });
-
-    // Contact.find()
-    // .where({
-    //   or: [
-    //     {
-    //       from: userId
-    //     },
-    //     {
-    //       to: userId
-    //     }
-    //   ],
-    //   status: 'accepted'
-    // })
-    // .exec(function(err, contacts){
-    //   if (err) return res.negotiate(err);
-
-    //   // if has online users check how are online in current user contact list
-    //   if ( sails.onlineusers ) {
-    //     for (var i = contacts.length - 1; i >= 0; i--) {
-
-    //       if ( contacts[i].from == userId ) {
-    //         if( sails.onlineusers[contacts[i].to] ) {
-    //           contacts[i].onlineStatus = 'online';
-    //         }
-    //       } else {
-    //         if( sails.onlineusers[contacts[i].from] ) {
-    //           contacts[i].onlineStatus = 'online';
-    //         }
-    //       }
-    //     }
-    //   }
-
-    //   return res.send({contact: contacts});
-    // });
   },
 
   findOneUserContact: function(req, res) {
