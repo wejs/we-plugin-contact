@@ -1,7 +1,7 @@
 {
   "name": "we-plugin-contact",
   "description": "We.js plugin we-plugin-contact",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "license": "MIT",
   "main": "lib/index.js",
   "dependencies": {
