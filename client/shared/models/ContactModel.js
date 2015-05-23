@@ -12,7 +12,7 @@ $(function() {
       async: true
     }),
 
-    user_id: DS.attr('number', {
+    'user_id': DS.attr('number', {
       async: true
     }),
 
@@ -91,7 +91,7 @@ $(function() {
   });
 
 
-  we.events.on('sails:created:contact', function(message) {
+  window.we.events.on('sails:created:contact', function(message) {
     var userId = App.get('currentUser.id');
 
     if (userId == message.data.to) {
@@ -101,10 +101,10 @@ $(function() {
       message.data.contactId = message.data.to;
     }
 
-    we.events.trigger('contact:requested', message);
+    window.we.events.trigger('contact:requested', message);
   });
 
-  we.events.on('sails:updated:contact', function(message) {
+  window.we.events.on('sails:updated:contact', function(message) {
     var userId = App.get('currentUser.id');
 
     if (userId == message.data.to) {
@@ -113,8 +113,8 @@ $(function() {
       message.data.contactId = message.data.to;
     }
 
-    we.events.trigger('contact:accepted' , message);
-    we.events.trigger('contact:accepted:' + message.data.id , message);
+    window.we.events.trigger('contact:accepted' , message);
+    window.we.events.trigger('contact:accepted:' + message.data.id , message);
   });
 
   App.ContactAdapter = App.ApplicationRESTAdapter.extend();
