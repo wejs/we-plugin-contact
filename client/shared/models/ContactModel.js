@@ -1,6 +1,6 @@
 $(function() {
   // overrides default contact model if exists
-  if (!App.contact) return;
+  if (!App.Contact) return;
 
   App.Contact = DS.Model.extend({
     status: DS.attr('string', {

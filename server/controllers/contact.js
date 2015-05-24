@@ -60,19 +60,12 @@ module.exports = {
         we.db.models.contact.request({
           from: uid,
           to: contactId
-        }).then(function (contact) {
+        }).then(function (r) {
+          var contact = r[0];
           // emit to user
-          we.io.sockets.in('user_' + contact.to).emit('contact', {
-            id: contact.id,
-            verb: 'created',
-            data: contact
-          });
+          we.io.sockets.in('user_' + contact.to).emit('contact:request', contact);
           // emit to other logged in user for sync status
-          we.io.sockets.in('user_' + contact.from).emit('contact', {
-            id: contact.id,
-            verb: 'created',
-            data: contact
-          });
+          we.io.sockets.in('user_' + contact.from).emit('contact:request', contact);
 
           res.locals.record = contact;
           // send result
