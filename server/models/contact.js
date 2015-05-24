@@ -37,6 +37,21 @@ module.exports = function Model(we) {
       },
 
       classMethods: {
+        findUserContacts: function findUserContacts(userId) {
+          return we.db.models.contact.findAll({
+            where: {
+              $or: [
+                {
+                  from: userId
+                },
+                {
+                  to: userId
+                }
+              ],
+              status: 'accepted'
+            }
+          });
+        },
         /**
          * Request contact relationship
          *

@@ -7,21 +7,33 @@ module.exports = {
     if(!req.isAuthenticated()) return res.forbidden();
     var we = req.getWe();
 
-    we.db.models.contact.findAndCountAll({
-      where: {
-        $or: [
-          {
-            from: req.user.id
-          },
-          {
-            to: req.user.id
+    we.db.models.contact.findUserContacts(req.user.id)
+    .then(function(result){
+      res.locals.metadata.count = result.length;
+      var contactIds = [];
+
+      if (result && result.length) {
+        for (var i = result.length - 1; i >= 0; i--) {
+          if (req.user.id == result[i].to) {
+            result[i].dataValues.isOnline = we.io.isOnline(result[i].from);
+            contactIds.push(result[i].from);
+          } else {
+            result[i].dataValues.isOnline = we.io.isOnline(result[i].to);
+            contactIds.push(result[i].to);
           }
-        ],
-        status: 'accepted'
+        }
+
+        we.db.models.user.findAll({
+          where: {
+            id: contactIds
+          }
+        }).then(function(users) {
+          res.locals.metadata.users = users;
+          res.ok(result);
+        })
+      } else {
+        res.ok(result);
       }
-    }).then(function(result){
-      res.locals.metadata.count = result.count;
-      res.ok(result.rows);
     });
   },
   /**
