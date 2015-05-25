@@ -59,5 +59,16 @@ module.exports = function loadPlugin(projectPath, Plugin) {
     }
   });
 
+  plugin.events.on('socket.io:on:user:disconnect', function (data) {
+    data.we.db.models.contact.findUserContacts(data.socket.user.id)
+    .then(function (contacts) {
+      contacts.forEach(function(c) {
+        var cId = c.to;
+        if (c.to == data.socket.user.id) cId = c.from;
+        data.we.we.io.sockets.to('user_' + cId).emit('contact:disconnect', { id: data.socket.user.id });
+      });
+    });
+  });
+
   return plugin;
 };
