@@ -54,7 +54,7 @@ module.exports = {
    * Request contact relationship
    */
   requestContact: function requestContact (req, res) {
-    if(!req.isAuthenticated()) return res.forbiden();
+    if(!req.isAuthenticated()) return res.forbidden();
     var we = req.getWe();
 
     var uid = req.user.id;
@@ -88,7 +88,7 @@ module.exports = {
   },
 
   acceptContact: function acceptContact (req, res) {
-    if(!req.isAuthenticated()) return res.forbiden();
+    if(!req.isAuthenticated()) return res.forbidden();
     var we = req.getWe();
 
     // first get and check if has one relationship
@@ -98,7 +98,7 @@ module.exports = {
 
       if(!contact) return res.notFound();
       // only logged in user can accept one contact
-      if(contact.to != req.user.id ) return res.forbiden();
+      if(contact.to != req.user.id ) return res.forbidden();
 
       contact.accept().then(function () {
         // emit to user
@@ -112,7 +112,7 @@ module.exports = {
   },
 
   ignoreContact: function ignoreContact (req, res) {
-    if (!req.isAuthenticated()) return res.forbiden();
+    if (!req.isAuthenticated()) return res.forbidden();
     var we = req.getWe();
     // first get and check if has one relationship
     we.db.models.contact
@@ -120,7 +120,7 @@ module.exports = {
       if (err) throw err;
       if(!contact) return res.notFound();
       // only logged in user can accept one contact
-      if(contact.to != req.user.id ) return res.forbiden();
+      if(contact.to != req.user.id ) return res.forbidden();
       contact.ignore().then(function () {
         if (err) throw err;
         // emit to user
@@ -132,7 +132,7 @@ module.exports = {
   },
 
   deleteContact: function deleteContact (req, res) {
-    if(!req.isAuthenticated()) return res.forbiden();
+    if(!req.isAuthenticated()) return res.forbidden();
     var we = req.getWe();
     // first get and check if has one relationship
     we.db.models.contact
