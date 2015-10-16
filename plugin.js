@@ -9,7 +9,7 @@ module.exports = function loadPlugin(projectPath, Plugin) {
   // plugin.setConfigs({
 
   // });
-  // ser plugin routes
+  // set plugin routes
   plugin.setRoutes({
     'get /api/v1/user/:userId/contact': {
       controller    : 'contact',

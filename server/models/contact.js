@@ -82,7 +82,7 @@ module.exports = function Model(we) {
          * @param  {function} callback  after done exec with callback(error,contact)
          */
         getUsersRelationship: function getUsersRelationship(uid, contactId, callback) {
-          we.db.models.contact.find({
+          we.db.models.contact.findOne({
             where: {
               $or: [{
                 from: uid,
