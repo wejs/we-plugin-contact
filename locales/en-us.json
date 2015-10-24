@@ -1,0 +1,4 @@
+{
+  "contact.notification.request.title": "New contact request",
+  "contact.notification.request.text": "{{friend.displayName}} send a contact request to you"
+}

@@ -37,18 +37,35 @@ module.exports = function Model(we) {
       },
 
       classMethods: {
-        findUserContacts: function findUserContacts(userId) {
+        /**
+         * Find user contacts with userId
+         *
+         * @param  {Number} userId
+         * @return {Object}         sequelize query promisse
+         */
+        findUserContacts: function findUserContacts(userId, status) {
           return we.db.models.contact.findAll({
             where: {
               $or: [
-                {
-                  from: userId
-                },
-                {
-                  to: userId
-                }
+                { from: userId },
+                { to: userId }
               ],
-              status: 'accepted'
+              status: (status || 'accepted')
+            }
+          });
+        },
+
+        /**
+         * Find user contact requests with userId
+         *
+         * @param  {Number} userId
+         * @return {Object}         sequelize query promisse
+         */
+        findUserContactRequests: function findUserContactRequests(userId) {
+          return we.db.models.contact.findAll({
+            where: {
+              to: userId,
+              status: 'requested'
             }
           });
         },
@@ -103,25 +120,25 @@ module.exports = function Model(we) {
           }).catch(callback);
         },
 
-        /**
-         * Get user contacts with user id
-         * @param  {string}   uid      user id to get contacts
-         * @param  {function} callback  after done exec with callback(error,contacts)
-         */
-        getUserContacts: function getUserContacts(uid, callback){
-          we.db.models.contact.findAll({
-            where: {
-              $or: [{
-                from: uid,
-              },{
-                to: uid
-              }]
-            }
-          })
-          .then(function(contacts) {
-            callback(contacts);
-          }).catch(callback);
-        }
+        // /**
+        //  * Get user contacts with user id
+        //  * @param  {string}   uid      user id to get contacts
+        //  * @param  {function} callback  after done exec with callback(error,contacts)
+        //  */
+        // getUserContacts: function getUserContacts(uid, callback){
+        //   we.db.models.contact.findAll({
+        //     where: {
+        //       $or: [{
+        //         from: uid,
+        //       },{
+        //         to: uid
+        //       }]
+        //     }
+        //   })
+        //   .then(function(contacts) {
+        //     callback(contacts);
+        //   }).catch(callback);
+        // }
       }
     }
   }

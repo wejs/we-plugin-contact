@@ -50,6 +50,23 @@ module.exports = function loadPlugin(projectPath, Plugin) {
       responseType  : 'json',
       permission    : true
     },
+
+    'get /api/v1/contact/requests': {
+      controller    : 'contact',
+      action        : 'getContactRequests',
+      model         : 'contact',
+      responseType  : 'json',
+      permission    : true
+    },
+
+    'get /api/v1/get-user-to-add': {
+      controller    : 'contact',
+      action        : 'getUsersToAdd',
+      model         : 'user',
+      responseType  : 'json',
+      permission    : true
+    },
+
     'get /contact': {
       controller    : 'contact',
       action        : 'getAllAuthenticatedUserContacts',
