@@ -131,16 +131,16 @@ module.exports = {
               modelId: contact.id,
               userId: contactUser.id,
               locale: res.locals.locale,
-              actions: {
-                accept: {
-                  text: res.locals.__('Accept'),
-                  link: ''
+              actions: [
+                {
+                  text: res.locals.__('contact.Accept'),
+                  link: '/api/v1/user/'+req.user.id+'/contact-accept'
                 },
-                ignore: {
-                  text: res.locals.__('Ignore'),
-                  link: ''
+                {
+                  text: res.locals.__('contact.Ignore'),
+                  link: '/api/v1/user/'+req.user.id+'/contact-ignore'
                 }
-              }
+              ]
             }).catch(function (err){
               we.log.error('Error on create contact notifications: ',err);
             });
@@ -150,7 +150,7 @@ module.exports = {
             // emit to user
             we.io.sockets.in('user_' + contactUser.id).emit('contact:request', contact);
             // emit to other logged in user for sync status
-            we.io.sockets.in('user_' + req.user.id).emit('contact:requested', contact);
+            we.io.sockets.in('user_' + req.user.id).emit('contact:request', contact);
           }
         }
 
@@ -162,9 +162,13 @@ module.exports = {
     });
   },
 
+  /**
+   * Accept a contact request, only the user in contact.to can accept the request
+   *
+   */
   acceptContact: function acceptContact (req, res) {
     if(!req.isAuthenticated()) return res.forbidden();
-    var we = req.getWe();
+    var we = req.we;
 
     // first get and check if has one relationship
     we.db.models.contact
@@ -175,11 +179,50 @@ module.exports = {
       // only logged in user can accept one contact
       if(contact.to != req.user.id ) return res.forbidden();
 
+      // already accept
+      if (contact.status == 'accepted') {
+        return res.ok(contact);
+      }
+
       contact.accept().then(function () {
-        // emit to user
-        we.io.sockets.in('user_' + contact.to).emit('contact:accept', contact);
-        // emit to other logged in user for sync status
-        we.io.sockets.in('user_' + contact.from).emit('contact:accept', contact);
+
+        // if we-plugin-notification is avaible
+        if (we.notification) {
+          // get contact user and create the notification in async
+          we.db.models.user.findById(contact.from)
+          .then(function (contactUser){
+            // register the notification
+            we.db.models.notification.create({
+              title: res.locals.__('contact.notification.accepted.title', {
+                contact: contact,
+                user: req.user,
+                friend: contactUser
+              }),
+              text: res.locals.__('contact.notification.accepted.text', {
+                contact: contact,
+                user: req.user,
+                friend: contactUser
+              }),
+              modelName: 'contact',
+              link: '/user/' + contact.to,
+              modelId: contact.id,
+              userId: contact.from,
+              locale: res.locals.locale
+            }).catch(function (err){
+              we.log.error('Error on create contact notifications: ',err);
+            });
+          }).catch(function (err){
+            we.log.error('Error on load user for create contact notifications: ',err);
+          });
+        }
+
+        if (we.io) {
+          // emit to user
+          we.io.sockets.in('user_' + contact.to).emit('contact:accept', contact);
+          // emit to other logged in user for sync status
+          we.io.sockets.in('user_' + contact.from).emit('contact:accept', contact);
+        }
+
         // send the response
         return res.ok(contact);
       });

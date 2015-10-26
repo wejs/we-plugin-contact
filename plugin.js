@@ -27,7 +27,7 @@ module.exports = function loadPlugin(projectPath, Plugin) {
       permission    : true
     },
     // accept
-    'post /api/v1/user/:userId/contact-accept': {
+    'get /api/v1/user/:userId/contact-accept': {
       controller    : 'contact',
       action        : 'acceptContact',
       model         : 'contact',
@@ -35,13 +35,14 @@ module.exports = function loadPlugin(projectPath, Plugin) {
       permission    : true
     },
     // ignore
-    'post /api/v1/user/:userId/contact-ignore': {
+    'get /api/v1/user/:userId/contact-ignore': {
       controller    : 'contact',
       action        : 'ignoreContact',
       model         : 'contact',
       responseType  : 'json',
       permission    : true
     },
+
     // delete contact relation
     'delete /api/v1/user/:userId/contact': {
       controller    : 'contact',

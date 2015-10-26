@@ -1,4 +1,8 @@
 {
   "contact.notification.request.title": "Novo pedido de contato",
-  "contact.notification.request.text": "{{friend.displayName}} enviou um pedido de contato"
+  "contact.notification.request.text": "{{friend.displayName}} enviou um pedido de contato",
+  "contact.Accept": "Aceitar",
+  "contact.Ignore": "Ignorar",
+  "contact.notification.accepted.title": "Contato aceito",
+  "contact.notification.accepted.text": "{{friend.displayName}} aceitou o seu pedido de contato"
 }
