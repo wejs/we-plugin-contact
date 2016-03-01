@@ -1,8 +1,4 @@
 {
-  "contact.notification.request.title": "New contact request",
-  "contact.notification.request.text": "{{friend.displayName}} send a contact request to you",
-  "contact.Accept": "Accept",
-  "contact.Ignore": "Ignore",
-  "contact.notification.accepted.title": "Contact accepted",
-  "contact.notification.accepted.text": "{{friend.displayName}} accepted you contact request"
+  "contact.notification.request.title": "{{requester.displayName}} sends you a contact request<br> <a href='{{acceptUrl}}'>Accept</a> or <a href='{{ignoreUrl}}'>ignore</a>",
+  "contact.notification.accepted.title": "{{requested.displayName}} accepted your contact request"
 }

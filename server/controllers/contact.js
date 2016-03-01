@@ -24,6 +24,40 @@ module.exports = {
     }).catch(res.queryError);
   },
 
+  find: function findUserContacts (req, res) {
+    var we = req.we;
+
+    we.db.models.contact
+    .findUserContacts(req.params.userId, req.query.status)
+    .then(function (result){
+      res.locals.metadata.count = result.length;
+      var contactIds = [];
+
+      if (result && result.length && we.io) {
+        for (var i = result.length - 1; i >= 0; i--) {
+          if (req.user.id == result[i].to) {
+            result[i].dataValues.isOnline = we.io.isOnline(result[i].from);
+            contactIds.push(result[i].from);
+          } else {
+            result[i].dataValues.isOnline = we.io.isOnline(result[i].to);
+            contactIds.push(result[i].to);
+          }
+        }
+
+        we.db.models.user.findAll({
+          where: {
+            id: contactIds
+          }
+        }).then(function (users) {
+          res.locals.metadata.users = users;
+          res.ok(result);
+        });
+      } else {
+        res.ok(result);
+      }
+    }).catch(res.queryError);
+  },
+
   getAllAuthenticatedUserContacts: function(req, res, next) {
     if(!req.isAuthenticated()) return res.forbidden();
     var we = req.we;
@@ -113,36 +147,31 @@ module.exports = {
 
         if (created) {
           // if we-plugin-notification is avaible
-          if (we.notification) {
-            // register the notification
+          if (we.plugins['we-plugin-notification'] && req.isAuthenticated()) {
+
+            var hostname = we.config.hostname;
+
+            // after create register one notifications
             we.db.models.notification.create({
-              title: res.locals.__('contact.notification.request.title', {
-                contact: contact,
-                user: req.user,
-                friend: contactUser
-              }),
-              text: res.locals.__('contact.notification.request.text', {
-                contact: contact,
-                user: req.user,
-                friend: contactUser
-              }),
-              modelName: 'contact',
-              link: '/user/'+contactUser.id,
-              modelId: contact.id,
-              userId: contactUser.id,
               locale: res.locals.locale,
-              actions: [
-                {
-                  text: res.locals.__('contact.Accept'),
-                  link: '/api/v1/user/'+req.user.id+'/contact-accept'
-                },
-                {
-                  text: res.locals.__('contact.Ignore'),
-                  link: '/api/v1/user/'+req.user.id+'/contact-ignore'
-                }
-              ]
-            }).catch(function (err){
-              we.log.error('Error on create contact notifications: ',err);
+              title: res.locals.__('contact.notification.request.title', {
+                acceptUrl: hostname+'/api/v1/user/'+req.user.id+'/contact-accept',
+                ignoreUrl: hostname+'/api/v1/user/'+req.user.id+'/contact-ignore',
+                hostname: hostname,
+                requester: req.user,
+                contact: contact
+              }),
+              redirectUrl: hostname+'/user/'+contactId,
+              userId: contactId,
+              actorId: req.user.id,
+              modelName: 'user',
+              modelId: contactId,
+              type: 'contact-request'
+            }).then(function (r) {
+              // res.locals.createdPostUserNotified[follower.userId] = true;
+              we.log.verbose('New contact notification, id: ', r.id);
+            }).catch(function (err) {
+              we.log.error('we-plugin-contact: ', err);
             });
           }
 
@@ -154,10 +183,12 @@ module.exports = {
           }
         }
 
+        if (res.locals.redirectTo)
+          return res.goTo(res.locals.redirectTo);
+
         res.locals.data = contact;
         // send result
         res.created();
-
       });
     });
   },
@@ -185,34 +216,70 @@ module.exports = {
       }
 
       contact.accept().then(function () {
-
         // if we-plugin-notification is avaible
-        if (we.notification) {
+        if (we.plugins['we-plugin-notification'] && req.isAuthenticated()) {
+
+          var hostname = we.config.hostname;
           // get contact user and create the notification in async
           we.db.models.user.findById(contact.from)
           .then(function (contactUser){
-            // register the notification
+            // after create register one notifications
             we.db.models.notification.create({
+              locale: res.locals.locale,
               title: res.locals.__('contact.notification.accepted.title', {
-                contact: contact,
-                user: req.user,
-                friend: contactUser
+                hostname: hostname,
+                requested: req.user,
+                requester: contactUser
               }),
-              text: res.locals.__('contact.notification.accepted.text', {
-                contact: contact,
-                user: req.user,
-                friend: contactUser
-              }),
-              modelName: 'contact',
-              link: '/user/' + contact.to,
-              modelId: contact.id,
+              redirectUrl: hostname+'/user/'+contact.from,
               userId: contact.from,
-              locale: res.locals.locale
-            }).catch(function (err){
-              we.log.error('Error on create contact notifications: ',err);
+              actorId: req.user.id,
+              modelName: 'user',
+              modelId: contact.from,
+              type: 'contact-accept'
+            }).then(function (r) {
+              we.log.verbose('New contact notification, id: ', r.id);
+            }).catch(function (err) {
+              we.log.error('we-plugin-contact: ', err);
             });
-          }).catch(function (err){
+
+
+            // register the notification
+            // we.db.models.notification.create({
+            //   title: res.locals.__('contact.notification.accepted.title', {
+            //     contact: contact,
+            //     user: req.user,
+            //     friend: contactUser
+            //   }),
+            //   text: res.locals.__('contact.notification.accepted.text', {
+            //     contact: contact,
+            //     user: req.user,
+            //     friend: contactUser
+            //   }),
+            //   modelName: 'contact',
+            //   link: '/user/' + contact.to,
+            //   modelId: contact.id,
+            //   userId: contact.from,
+            //   locale: res.locals.locale
+            // }).catch(function (err){
+            //   we.log.error('Error on create contact notifications: ',err);
+            // });
+          }).catch(function (err) {
             we.log.error('Error on load user for create contact notifications: ',err);
+          });
+
+          req.we.db.models.notification.update({
+            read: true
+          }, {
+            where: {
+              actorId: contact.from,
+              modelId: req.user.id,
+              modelName: 'user',
+              userId: req.user.id,
+              type: 'contact-request'
+            }
+          }).catch(function (err) {
+            req.we.log.error(err);
           });
         }
 
@@ -222,6 +289,9 @@ module.exports = {
           // emit to other logged in user for sync status
           we.io.sockets.in('user_' + contact.from).emit('contact:accept', contact);
         }
+
+        if (res.locals.redirectTo)
+          return res.goTo(res.locals.redirectTo);
 
         // send the response
         return res.ok(contact);

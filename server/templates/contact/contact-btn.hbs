@@ -1,0 +1,19 @@
+<form action="/api/v1/user/{{contactUserId}}/contact-request" method="post">
+  <input type="hidden" name="redirectTo" value="{{redirectUrl}}">
+  <button class="btn btn-default">Add contact</button>
+</form>
+
+<form action="/api/v1/user/{{contactUserId}}/contact-accept" method="post">
+  <input type="hidden" name="redirectTo" value="{{redirectUrl}}">
+  <button class="btn btn-default">Accept contact</button>
+</form>
+
+<form action="/api/v1/user/{{contactUserId}}/contact-ignore" method="post">
+  <input type="hidden" name="redirectTo" value="{{redirectUrl}}">
+  <button class="btn btn-default">Ignore contact</button>
+</form>
+
+<form action="/api/v1/user/{{contactUserId}}/contact" method="post">
+  <input type="hidden" name="redirectTo" value="{{redirectUrl}}">
+  <button class="btn btn-default">Remove contact</button>
+</form>

@@ -7,8 +7,8 @@ module.exports = function loadPlugin(projectPath, Plugin) {
 
   // set plugin configs
   // plugin.setConfigs({
-
   // });
+
   // set plugin routes
   plugin.setRoutes({
     'get /api/v1/user/:userId/contact': {
@@ -66,6 +66,14 @@ module.exports = function loadPlugin(projectPath, Plugin) {
       model         : 'user',
       responseType  : 'json',
       permission    : true
+    },
+
+    'get /user/:userId/contact': {
+      name          : 'contact_find',
+      controller    : 'contact',
+      action        : 'find',
+      model         : 'contact',
+      permission    : 'find_contact'
     },
 
     'get /contact': {
