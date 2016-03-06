@@ -7,7 +7,7 @@ var http;
 var we;
 
 describe('contactFeature', function () {
-  var salvedPage, salvedUser, salvedUserPassword;
+  var salvedUser, salvedUserPassword;
   var authenticatedRequest;
 
   before(function (done) {
@@ -31,7 +31,7 @@ describe('contactFeature', function () {
       })
       .expect(200)
       .set('Accept', 'application/json')
-      .end(function (err, res) {
+      .end(function (err) {
         if (err) throw err;
 
         done();
