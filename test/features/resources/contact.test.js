@@ -2,9 +2,7 @@ var assert = require('assert');
 var request = require('supertest');
 var helpers = require('we-test-tools').helpers;
 var stubs = require('we-test-tools').stubs;
-var _ = require('lodash');
-var http;
-var we;
+var http, _, we;
 
 describe('contactFeature', function () {
   var salvedUser, salvedUserPassword;
@@ -13,6 +11,8 @@ describe('contactFeature', function () {
   before(function (done) {
     http = helpers.getHttp();
     we = helpers.getWe();
+
+    _ = we.utils._;
 
     var userStub = stubs.userStub();
     helpers.createUser(userStub, function(err, user) {

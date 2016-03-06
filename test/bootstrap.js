@@ -1,16 +1,18 @@
 var projectPath = process.cwd();
 var deleteDir = require('rimraf');
 var path = require('path');
-var async = require('async');
 var testTools = require('we-test-tools');
-var we;
+var we,  async;
 
 before(function(callback) {
   this.slow(100);
 
 
   testTools.copyLocalConfigIfNotExitst(projectPath, function() {
-    we = require('we-core');
+    var We = require('we-core');
+    we = new We();
+
+    async = we.utils.async;
 
     testTools.init({}, we);
 

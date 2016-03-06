@@ -4,20 +4,18 @@
   "version": "1.0.0",
   "license": "MIT",
   "main": "plugin.js",
-  "dependencies": {
-    "async": "^0.9.0",
-    "lodash": "^3.0.1"
-  },
+  "dependencies": {},
   "devDependencies": {
     "fs-extra": "^0.18.2",
     "istanbul": "^0.2.7",
     "jscs": "^1.4.5",
     "jshint": "^2.5.0",
-    "mocha": "^1.18.2",
+    "mocha": "^2.4.5",
+    "mysql": "^2.10.2",
     "rimraf": "^2.3.3",
-    "supertest": "^0.15.0",
+    "supertest": "^1.2.0",
+    "we-core": "^1.0.0-0",
     "we-test-tools": "^0.3.2",
-    "we-core": "^0.3.21",
     "we-theme-admin-default": "^0.3.1",
     "we-theme-site-wejs": "^0.3.6"
   },

@@ -1,10 +1,8 @@
 var assert = require('assert');
 var request = require('supertest');
 var helpers = require('we-test-tools').helpers;
-var async = require('async');
-var _ = require('lodash');
 var http;
-var we;
+var we, async, _;
 var agent;
 
 describe('contactFeature', function() {
@@ -16,6 +14,11 @@ describe('contactFeature', function() {
     agent = request.agent(http);
 
     we = helpers.getWe();
+
+    _ = we.utils._;
+
+    async = we.utils.async;
+
     we.config.acl.disabled = true;
 
     async.parallel([
