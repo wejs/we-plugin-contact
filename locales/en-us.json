@@ -6,5 +6,7 @@
   "contact-btn-text-accepted": "Remove contact",
   "contact-btn-text-requestsToYou": "Accept contact",
   "contact-btn-text-ignored": "Ignore contact",
-  "contact-btn-text-add": "Add contact"
+  "contact-btn-text-add": "Add contact",
+
+  "contact.find.empty": "No contacts"
 }

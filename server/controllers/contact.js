@@ -60,24 +60,30 @@ module.exports = {
 
   getAllAuthenticatedUserContacts: function(req, res, next) {
     if(!req.isAuthenticated()) return res.forbidden();
+    if (req.user.id != res.locals.user.id) return res.forbidden();
+
     var we = req.we;
 
     if (req.query.status == 'requested') {
       return we.controllers.contact.getContactRequests(req, res, next);
     }
 
-    we.db.models.contact.findUserContacts(req.user.id)
+    we.db.models.contact.findUserContacts(res.locals.user.id)
     .then(function (result){
       res.locals.metadata.count = result.length;
       var contactIds = [];
 
-      if (result && result.length && we.io) {
+      if (result && result.length) {
         for (var i = result.length - 1; i >= 0; i--) {
           if (req.user.id == result[i].to) {
-            result[i].dataValues.isOnline = we.io.isOnline(result[i].from);
+            if (we.io)
+              result[i].dataValues.isOnline = we.io.isOnline(result[i].from);
+
             contactIds.push(result[i].from);
           } else {
-            result[i].dataValues.isOnline = we.io.isOnline(result[i].to);
+            if (we.io)
+              result[i].dataValues.isOnline = we.io.isOnline(result[i].to);
+
             contactIds.push(result[i].to);
           }
         }
