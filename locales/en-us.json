@@ -8,5 +8,6 @@
   "contact-btn-text-ignored": "Ignore contact",
   "contact-btn-text-add": "Add contact",
 
-  "contact.find.empty": "No contacts"
+  "contact.find.empty": "No contacts",
+  "contact.find": "Contacts"
 }

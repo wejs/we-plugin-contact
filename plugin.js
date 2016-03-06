@@ -70,7 +70,30 @@ module.exports = function loadPlugin(projectPath, Plugin) {
       controller    : 'contact',
       action        : 'find',
       model         : 'contact',
-      permission    : 'find_contact'
+      permission    : 'find_contact',
+
+      titleHandler: 'i18n',
+      titleI18n: 'contact.find',
+
+      breadcrumbHandler: function breadcrumbHandler(req, res, next) {
+        if (!res.locals.user) return next();
+
+        res.locals.breadcrumb =
+          '<ol class="breadcrumb">'+
+            '<li><a href="/">'+res.locals.__('Home')+'</a></li>'+
+            '<li><a href="'+
+              req.we.router.urlTo('user.find', req.paramsArray)+
+            '">'+res.locals.__('user.find')+'</a></li>'+
+
+            '<li><a href="'+res.locals.user.getPath(req)+'">'+
+              res.locals.user.displayName
+            +'</a></li>'+
+
+
+            '<li class="active">'+res.locals.__('contact.find')+'</li>'+
+          '</ol>';
+        next();
+      }
     },
 
     'get /contact': {
@@ -91,6 +114,28 @@ module.exports = function loadPlugin(projectPath, Plugin) {
         data.we.we.io.sockets.to('user_' + cId).emit('contact:disconnect', { id: data.socket.user.id });
       });
     });
+  });
+
+
+  plugin.hooks.on('we-plugin-menu:after:set:core:menus', function (data, done){
+    var req = data.req;
+    var res = data.res;
+
+    if (res.locals.currentUserMenu &&
+      data.res.locals.user &&
+      ( data.req.user.id == data.res.locals.user.id )
+    ) {
+      res.locals.currentUserMenu.addLink({
+        id: 'contact',
+        text: '<i class="fa fa-users"></i> '+req.__('contact.find'),
+        href: '/user/'+res.locals.user.id+'/contact',
+        class: null,
+        weight: 6,
+        name: 'menu.user.contact'
+      });
+    }
+
+    done();
   });
 
   plugin.addJs('we.contact', {
