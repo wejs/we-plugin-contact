@@ -32,15 +32,10 @@ module.exports = function (projectPath, Widget) {
       return next();
     }
 
-    req.we.db.models.contact
-    .getUsersRelationship(req.user.id, res.locals.user.id, function (err, contact) {
+    widget.userid = req.user.id;
+    widget.contactuserid = res.locals.user.id;
 
-      widget.contact = contact;
-
-      console.log(err, contact);
-
-      return next();
-    });
+    next();
   }
 
   return widget;

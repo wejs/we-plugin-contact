@@ -23,7 +23,6 @@ module.exports = function loadPlugin(projectPath, Plugin) {
       controller    : 'contact',
       action        : 'requestContact',
       model         : 'contact',
-      responseType  : 'json',
       permission    : true
     },
     // accept
@@ -31,7 +30,6 @@ module.exports = function loadPlugin(projectPath, Plugin) {
       controller    : 'contact',
       action        : 'acceptContact',
       model         : 'contact',
-      responseType  : 'json',
       permission    : true
     },
     // ignore
@@ -39,12 +37,11 @@ module.exports = function loadPlugin(projectPath, Plugin) {
       controller    : 'contact',
       action        : 'ignoreContact',
       model         : 'contact',
-      responseType  : 'json',
       permission    : true
     },
 
     // delete contact relation
-    'delete /api/v1/user/:userId/contact': {
+    'post /api/v1/user/:userId/contact-delete': {
       controller    : 'contact',
       action        : 'deleteContact',
       model         : 'contact',
@@ -94,6 +91,11 @@ module.exports = function loadPlugin(projectPath, Plugin) {
         data.we.we.io.sockets.to('user_' + cId).emit('contact:disconnect', { id: data.socket.user.id });
       });
     });
+  });
+
+  plugin.addJs('we.contact', {
+    weight: 15, pluginName: 'we-plugin-contact',
+    path: 'files/public/we.contact.js'
   });
 
   return plugin;

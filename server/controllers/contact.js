@@ -112,11 +112,17 @@ module.exports = {
    */
   findOneUserContact: function findOneUserContact(req, res) {
     if(!req.isAuthenticated()) return res.forbidden();
-    var we = req.getWe();
+
+    var we = req.we;
     we.db.models.contact
-    .getUsersRelationship (req.user.id, req.params.userId, function (err, contact){
+    .getUsersRelationship (req.user.id, req.params.userId, function (err, contact) {
       if (err) throw err;
       if (!contact) return res.send();
+
+      contact.btnText = res.locals.__(
+        'contact-btn-text-'+ ( contact.status || 'add' )
+      );
+
       return res.ok(contact);
     });
   },
@@ -144,6 +150,13 @@ module.exports = {
       }).then(function (r) {
         var contact = r[0];
         var created = r[1];
+
+        contact.btnText = res.locals.__(
+          'contact-btn-text-requestsToYou'
+        );
+        contact.btnRequesterText = res.locals.__(
+          'contact-btn-text-requested'
+        );
 
         if (created) {
           // if we-plugin-notification is avaible
@@ -178,13 +191,16 @@ module.exports = {
           if (we.io) {
             // emit to user
             we.io.sockets.in('user_' + contactUser.id).emit('contact:request', contact);
-            // emit to other logged in user for sync status
-            we.io.sockets.in('user_' + req.user.id).emit('contact:request', contact);
+            // emit to requester logged in user for sync status
+            we.io.sockets.in('user_' + req.user.id).emit('contact:requested', contact);
           }
         }
 
-        if (res.locals.redirectTo)
+        if (res.locals.redirectTo) {
           return res.goTo(res.locals.redirectTo);
+        } else if (res.locals.responseType == 'html') {
+          return res.goTo('/user/'+req.params.userId);
+        }
 
         res.locals.data = contact;
         // send result
@@ -216,6 +232,10 @@ module.exports = {
       }
 
       contact.accept().then(function () {
+        contact.btnText = res.locals.__(
+          'contact-btn-text-'+ ( contact.status || 'add' )
+        );
+
         // if we-plugin-notification is avaible
         if (we.plugins['we-plugin-notification'] && req.isAuthenticated()) {
 
@@ -231,39 +251,17 @@ module.exports = {
                 requested: req.user,
                 requester: contactUser
               }),
-              redirectUrl: hostname+'/user/'+contact.from,
+              redirectUrl: hostname+'/user/'+contact.to,
               userId: contact.from,
               actorId: req.user.id,
               modelName: 'user',
-              modelId: contact.from,
+              modelId: contact.to,
               type: 'contact-accept'
             }).then(function (r) {
               we.log.verbose('New contact notification, id: ', r.id);
             }).catch(function (err) {
               we.log.error('we-plugin-contact: ', err);
             });
-
-
-            // register the notification
-            // we.db.models.notification.create({
-            //   title: res.locals.__('contact.notification.accepted.title', {
-            //     contact: contact,
-            //     user: req.user,
-            //     friend: contactUser
-            //   }),
-            //   text: res.locals.__('contact.notification.accepted.text', {
-            //     contact: contact,
-            //     user: req.user,
-            //     friend: contactUser
-            //   }),
-            //   modelName: 'contact',
-            //   link: '/user/' + contact.to,
-            //   modelId: contact.id,
-            //   userId: contact.from,
-            //   locale: res.locals.locale
-            // }).catch(function (err){
-            //   we.log.error('Error on create contact notifications: ',err);
-            // });
           }).catch(function (err) {
             we.log.error('Error on load user for create contact notifications: ',err);
           });
@@ -290,8 +288,12 @@ module.exports = {
           we.io.sockets.in('user_' + contact.from).emit('contact:accept', contact);
         }
 
-        if (res.locals.redirectTo)
+        if (res.locals.redirectTo) {
           return res.goTo(res.locals.redirectTo);
+        } else if (res.locals.responseType == 'html') {
+          // redirect to contat if are an html request
+          return res.goTo('/user/'+contact.from);
+        }
 
         // send the response
         return res.ok(contact);
@@ -310,9 +312,22 @@ module.exports = {
       // only logged in user can accept one contact
       if(contact.to != req.user.id ) return res.forbidden();
       contact.ignore().then(function () {
-        if (err) throw err;
+        if (err) return res.queryError(err);
+
+        contact.btnText = res.locals.__(
+          'contact-btn-text-'+ ( contact.status || 'add' )
+        );
+
         // emit to user
         we.io.sockets.in('user_' + contact.to).emit('contact:ignore', contact);
+
+        if (res.locals.redirectTo) {
+          return res.goTo(res.locals.redirectTo);
+        } else if (res.locals.responseType == 'html') {
+          // redirect to contat if are an html request
+          return res.goTo('/user/'+req.params.userId);
+        }
+
         // send the response
         return res.send({contact: contact});
       });
@@ -325,7 +340,7 @@ module.exports = {
     // first get and check if has one relationship
     we.db.models.contact
     .getUsersRelationship(req.user.id, req.params.userId, function (err, contact) {
-      if (err) throw err;
+      if (err) return res.queryError(err);
       if(!contact) return res.notFound();
       // if user is ignored return not found
       if(contact.status === 'ignored' && contact.from === req.user.id)
@@ -333,13 +348,28 @@ module.exports = {
       // delete the contact relationship
       we.db.models.contact.destroy({
         where: {id: contact.id}
-      }).then(function (){
+      }).then(function () {
+        contact.status = 'deleted';
+        contact.btnText = res.locals.__(
+          'contact-btn-text-add'
+        );
+
+        res.locals.data = contact;
+
         // emit to user
         we.io.sockets.in('user_' + contact.to).emit('contact:delete', contact);
         // emit to other logged in user for sync status
         we.io.sockets.in('user_' + contact.from).emit('contact:delete', contact);
+
+        if (res.locals.redirectTo) {
+          return res.goTo(res.locals.redirectTo);
+        } else if (res.locals.responseType == 'html') {
+          // redirect to contat if are an html request
+          return res.goTo('/user/'+req.params.userId);
+        }
+
         // send 200 response
-        return res.send();
+        return res.ok();
       });
     });
   }

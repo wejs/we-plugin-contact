@@ -1,3 +1,3 @@
 {{#unless widget.disabled}}
-  {{{contact-btn userId=locals.req.user.id contactUserId=locals.user.id contact=widget.contact locals=locals}}}
+  <we-contact-btn data-userid="{{locals.req.user.id}}" data-contactuserid="{{locals.user.id}}" class="btn btn-default">{{t 'contact-btn-text-add' }}</we-contact-btn>
 {{/unless}}

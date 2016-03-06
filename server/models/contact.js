@@ -14,12 +14,14 @@ module.exports = function Model(we) {
         type: we.db.Sequelize.BIGINT,
         allowNull: false
       },
-      // requested | accepted| ignored
-      // requestsToYou
+      // requested | accepted | ignored || requestsToYou
       status: {
         type: we.db.Sequelize.ENUM('requested', 'accepted', 'ignored'),
         defaultValue: 'requested'
-      }
+      },
+
+      btnText: { type: we.db.Sequelize.VIRTUAL },
+      btnRequesterText: { type: we.db.Sequelize.VIRTUAL }
     },
 
     options: {

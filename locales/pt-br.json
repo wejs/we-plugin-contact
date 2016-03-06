@@ -1,4 +1,10 @@
 {
   "contact.notification.request.title": "{{requester.displayName}} quer adicionar você como contato. <br> <a href='{{acceptUrl}}'>Aceitar</a> ou <a href='{{ignoreUrl}}'>ignorar</a>",
-  "contact.notification.accepted.title": "{{requested.displayName}} aceitou seu pedido de contato"
+  "contact.notification.accepted.title": "{{requested.displayName}} aceitou seu pedido de contato",
+
+  "contact-btn-text-requested": "Contato pedido",
+  "contact-btn-text-accepted": "Remover contato",
+  "contact-btn-text-requestsToYou": "Aceitar contato",
+  "contact-btn-text-ignored": "Ignorar contato",
+  "contact-btn-text-add": "Adicionar contato"
 }

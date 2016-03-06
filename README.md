@@ -1,6 +1,6 @@
 # We.js contact plugin
 
-> User contact association plugin
+> User contact relationship plugin
 
 ## Routes
 
@@ -22,9 +22,9 @@
 
 ### Delete contact request
 
-**delete /api/v1/user/:userId/contact**
+**post /api/v1/user/:userId/contact-delete**
 
-### Get all authenticated contacts
+### Get all authenticated user contacts
 
 **get /contact**
 
