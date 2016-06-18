@@ -1,40 +1,19 @@
 {
   "name": "we-plugin-contact",
   "description": "We.js contact plugin",
-  "version": "1.0.0",
-  "license": "MIT",
+  "version": "1.1.0",
   "main": "plugin.js",
-  "dependencies": {},
-  "devDependencies": {
-    "fs-extra": "^0.18.2",
-    "istanbul": "^0.2.7",
-    "jscs": "^1.4.5",
-    "jshint": "^2.5.0",
-    "mocha": "^2.4.5",
-    "mysql": "^2.10.2",
-    "rimraf": "^2.3.3",
-    "supertest": "^1.2.0",
-    "we-core": "^1.0.0-0",
-    "we-test-tools": "^0.3.2",
-    "we-theme-admin-default": "^0.3.1",
-    "we-theme-site-wejs": "^0.3.6"
-  },
-  "engines": {
-    "node": ">=0.10.0"
-  },
-  "scripts": {
-    "lint": "./node_modules/.bin/jshint .",
-    "test": "NODE_ENV=test LOG_LV=info ./node_modules/.bin/mocha test/bootstrap.js test/**/*.test.js",
-    "prepublish": "npm prune && npm run lint"
-  },
+  "scripts": {},
   "keywords": [
-    "we.js",
-    "wejs",
-    "plugin",
+    "wejs-plugin",
     "contact"
   ],
-  "repository": {
-    "type": "git",
-    "url": "git@github.com:wejs/we-plugin-contact.git"
+  "repository": "wejs/we-plugin-contact",
+  "author": "Alberto Souza <contato@albertosouza.net>",
+  "license": "MIT",
+  "wejs": {
+    "dependencies": {
+      "we-plugin-user": true
+    }
   }
 }

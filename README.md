@@ -1,6 +1,6 @@
 # We.js contact plugin
 
-> User contact relationship plugin
+User contact relationship plugin
 
 ## Routes
 
