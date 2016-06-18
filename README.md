@@ -2,6 +2,12 @@
 
 User contact relationship plugin
 
+## Installation
+
+```sh
+we i we-plugin-contact
+```
+
 ## Routes
 
 ### Find one user contact
