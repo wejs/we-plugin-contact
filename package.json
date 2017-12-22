@@ -30,13 +30,7 @@
     "prepublish": "npm prune && npm run lint"
   },
   "keywords": [
-    "we.js",
-    "wejs",
-    "plugin",
-    "contact"
+    "wejs-plugin"
   ],
-  "repository": {
-    "type": "git",
-    "url": "git@github.com:wejs/we-plugin-contact.git"
-  }
+  "repository": "wejs/we-plugin-contact"
 }
