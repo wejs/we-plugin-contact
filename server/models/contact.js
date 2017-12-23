@@ -2,8 +2,8 @@
  * Contact model
  */
 
-module.exports = function Model(we) {
-  var model = {
+module.exports = function contactModel(we) {
+  const model = {
     definition: {
       // user how send the request
       from: {
@@ -24,12 +24,12 @@ module.exports = function Model(we) {
 
     options: {
       instanceMethods: {
-        accept: function acceptContact() {
+        accept() {
           // set new status
           this.status = 'accepted';
           return this.save();
         },
-        ignore: function ignoreContact() {
+        ignore() {
           // set new status
           this.status = 'ignored';
           return this.save();
@@ -43,8 +43,9 @@ module.exports = function Model(we) {
          * @param  {Number} userId
          * @return {Object}         sequelize query promisse
          */
-        findUserContacts: function findUserContacts(userId, status) {
-          return we.db.models.contact.findAll({
+        findUserContacts(userId, status) {
+          return we.db.models.contact
+          .findAll({
             where: {
               $or: [
                 { from: userId },
@@ -61,8 +62,9 @@ module.exports = function Model(we) {
          * @param  {Number} userId
          * @return {Object}         sequelize query promisse
          */
-        findUserContactRequests: function findUserContactRequests(userId) {
-          return we.db.models.contact.findAll({
+        findUserContactRequests(userId) {
+          return we.db.models.contact
+          .findAll({
             where: {
               to: userId,
               status: 'requested'
@@ -75,8 +77,9 @@ module.exports = function Model(we) {
          * @param  {object} ops options { from: '', to, '' }
          * @return {object}     Sequelzie findOrCreateInstance
          */
-        request: function requestContact(ops) {
-          return we.db.models.contact.findOrCreate({
+        request(ops) {
+          return we.db.models.contact
+          .findOrCreate({
             where: {
               $or: [{
                 from: ops.from,
@@ -98,8 +101,9 @@ module.exports = function Model(we) {
          * @param  {string}   contact_id      contact id
          * @param  {function} callback  after done exec with callback(error,contact)
          */
-        getUsersRelationship: function getUsersRelationship(uid, contactId, callback) {
-          we.db.models.contact.findOne({
+        getUsersRelationship(uid, contactId, callback) {
+          we.db.models.contact
+          .findOne({
             where: {
               $or: [{
                 from: uid,
@@ -109,15 +113,22 @@ module.exports = function Model(we) {
                 to: uid
               }]
             }
-          }).then(function (contact) {
+          })
+          .then( (contact)=> {
             // no relationship found
-            if(!contact) return callback();
-            // if request is to user uid
-            if (contact.status === 'requested' && contact.to === uid){
-              contact.status = 'requestsToYou';
+            if (!contact) {
+              callback();
+            } else {
+              // if request is to user uid
+              if (contact.status === 'requested' && contact.to === uid){
+                contact.status = 'requestsToYou';
+              }
+              callback(null, contact);
             }
-            callback(null, contact);
-          }).catch(callback);
+
+            return null;
+          })
+          .catch(callback);
         },
 
         // /**

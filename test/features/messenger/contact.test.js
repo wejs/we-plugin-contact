@@ -45,12 +45,20 @@ describe('contactFeature', function() {
   });
 
   describe('HTTP', function() {
-    afterEach(function(done){
-      we.db.models.contact.destroy({where: {
-        status: { id: {$not: null} }
-      }}).then(function (){
+    afterEach(function(done) {
+      we.db.models.contact
+      .destroy({
+        where: {
+          id: {
+            $ne: null
+          }
+        }
+      })
+      .then(function () {
         done();
-      });
+        return null;
+      })
+      .catch(done);
     });
 
 
@@ -59,7 +67,11 @@ describe('contactFeature', function() {
       .set('Accept', 'application/json')
       .expect(200)
       .end(function(err, res) {
-        if (err) throw err;
+        if (err) {
+          console.log('res.text>', res.text);
+          return done(err);
+        }
+
         assert(!res.body.contact);
         done();
       });
@@ -70,36 +82,41 @@ describe('contactFeature', function() {
       .set('Accept', 'application/json')
       .expect(201)
       .end(function (err, res) {
-        if (err) throw err;
+        if (err) {
+          console.log('res.text>', res.text);
+          return done(err);
+        }
+
         assert(res.body.contact);
-        assert( _.isArray(res.body.contact) , 'contact not is array');
-        assert(res.body.meta);
-        assert(res.body.contact[0].id);
-        assert.equal(res.body.contact[0].to, salvedUser2.id);
-        assert.equal(res.body.contact[0].from, salvedUser.id);
+        assert(res.body.contact.id);
+        assert.equal(res.body.contact.to, salvedUser2.id, 'contact.to should be user 2 id');
+        assert.equal(res.body.contact.from, salvedUser.id, 'contact.from should be user 1 id');
         done();
       });
     });
 
     it ('post /api/v1/user/:userId/contact-accept should accept contact', function(done) {
-      we.db.models.contact.request({
+      we.db.models.contact
+      .request({
         from: salvedUser.id,
         to: salvedUser2.id
-      }).then(function () {
+      })
+      .then(function () {
         authenticatedRequest2.post('/api/v1/user/'+ salvedUser.id +'/contact-accept')
         .set('Accept', 'application/json')
         .expect(200)
         .end(function (err, res) {
-          if (err) throw err;
+          if (err) return done(err);
+
           assert(res.body.contact);
-          assert( _.isArray(res.body.contact) , 'contact not is array');
-          assert(res.body.meta);
-          assert(res.body.contact[0].id);
-          assert.equal(res.body.contact[0].to, salvedUser2.id);
-          assert.equal(res.body.contact[0].from, salvedUser.id);
+          assert(res.body.contact.id);
+          assert.equal(res.body.contact.to, salvedUser2.id);
+          assert.equal(res.body.contact.from, salvedUser.id);
+
           done();
         });
-      });
+      })
+      .catch(done);
     });
 
     it ('delete /api/v1/user/:userId/contact/ should delete one contact request', function(done){
@@ -154,22 +171,26 @@ describe('contactFeature', function() {
     });
 
     it ('get /api/v1/user/:userId/contact should get one user contact relationship', function (done) {
-      we.db.models.contact.request({
+      we.db.models.contact
+      .request({
         from: salvedUser.id,
         to: salvedUser2.id
-      }).then(function (r) {
+      })
+      .then(function (r) {
         var contact = r[0];
-        contact.accept().then(function () {
+        return contact.accept()
+        .then(function () {
           authenticatedRequest2.get('/api/v1/user/'+salvedUser.id+'/contact')
           .set('Accept', 'application/json')
           .expect(200)
           .end(function(err, res) {
             if (err) throw err;
             assert(res.body.contact);
-            assert( res.body.contact.length >0 );
+            assert(res.body.contact.id);
             done();
           });
-        });
+        })
+        .catch(done);
       });
     });
 

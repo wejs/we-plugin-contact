@@ -4,22 +4,22 @@
   "version": "0.3.3",
   "license": "MIT",
   "main": "lib/index.js",
-  "dependencies": {
-    "async": "^0.9.0",
-    "lodash": "^3.0.1"
-  },
+  "dependencies": {},
   "devDependencies": {
-    "fs-extra": "^0.18.2",
-    "istanbul": "^0.2.7",
-    "jscs": "^1.4.5",
-    "jshint": "^2.5.0",
-    "mocha": "^1.18.2",
-    "rimraf": "^2.3.3",
-    "supertest": "^0.15.0",
-    "we-test-tools": "^0.3.2",
-    "we-core": "^0.3.21",
-    "we-theme-admin-default": "^0.3.1",
-    "we-theme-site-wejs": "^0.3.6"
+    "express-mysql-session": "^1.2.3",
+    "fs-extra": "^5.0.0",
+    "istanbul": "^0.4.5",
+    "jscs": "^3.0.7",
+    "jshint": "^2.9.5",
+    "mocha": "^4.0.1",
+    "mysql": "^2.15.0",
+    "rimraf": "^2.6.2",
+    "supertest": "^3.0.0",
+    "we-core": "^1.12.15",
+    "we-test-tools": "^0.3.19",
+    "we-plugin-auth": "^1.3.1",
+    "we-plugin-acl": "^1.2.11",
+    "we-plugin-user": "^1.1.8"
   },
   "engines": {
     "node": ">=0.10.0"
@@ -32,5 +32,13 @@
   "keywords": [
     "wejs-plugin"
   ],
+  "wejs": {
+    "plugins": {
+      "we-plugin-auth": true,
+      "we-plugin-acl": true,
+      "we-plugin-user": true
+    },
+    "devPlugins": {}
+  },
   "repository": "wejs/we-plugin-contact"
 }

@@ -34,8 +34,22 @@ module.exports = function loadPlugin(projectPath, Plugin) {
       responseType  : 'json',
       permission    : true
     },
+    'post /api/v1/user/:userId/contact-accept': {
+      controller    : 'contact',
+      action        : 'acceptContact',
+      model         : 'contact',
+      responseType  : 'json',
+      permission    : true
+    },
     // ignore
     'get /api/v1/user/:userId/contact-ignore': {
+      controller    : 'contact',
+      action        : 'ignoreContact',
+      model         : 'contact',
+      responseType  : 'json',
+      permission    : true
+    },
+    'post /api/v1/user/:userId/contact-ignore': {
       controller    : 'contact',
       action        : 'ignoreContact',
       model         : 'contact',
