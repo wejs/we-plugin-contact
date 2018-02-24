@@ -1,21 +1,20 @@
-var assert = require('assert');
-var request = require('supertest');
-var helpers = require('we-test-tools').helpers;
-var async = require('async');
-var _ = require('lodash');
-var http;
-var we;
-var agent;
+const assert = require('assert'),
+  request = require('supertest'),
+  helpers = require('we-test-tools').helpers;
+
+let http, we, agent, _, async;
+let salvedUser, salvedUserPassword, authenticatedRequest, authToken;
+let salvedUser2, salvedUserPassword2, authenticatedRequest2, authToken2;
 
 describe('contactFeature', function() {
-  var salvedUser, salvedUserPassword, authenticatedRequest, authToken;
-  var salvedUser2, salvedUserPassword2, authenticatedRequest2, authToken2;
-
   before(function (done) {
     http = helpers.getHttp();
     agent = request.agent(http);
 
     we = helpers.getWe();
+    _ = we.utils._;
+    async = we.utils.async;
+
     we.config.acl.disabled = true;
 
     async.parallel([

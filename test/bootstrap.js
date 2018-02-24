@@ -1,7 +1,5 @@
 const projectPath = process.cwd(),
-  deleteDir = require('rimraf'),
   path = require('path'),
-  async = require('async'),
   testTools = require('we-test-tools'),
   We = require('we-core');
 
@@ -37,26 +35,7 @@ before(function(callback) {
 
 //after all tests
 after(function (callback) {
-  const tempFolders = [
-    projectPath + '/files/tmp',
-    projectPath + '/files/config',
-    projectPath + '/files/sqlite',
-
-    projectPath + '/files/public/min',
-
-    projectPath + '/files/public/tpls.hbs.js',
-    projectPath + '/files/public/admin.tpls.hbs.js',
-    projectPath + '/files/public/project.css',
-    projectPath + '/files/public/project.js',
-    projectPath + '/config/local.js',
-  ];
-
-  async.each(tempFolders, (folder, next)=> {
-    deleteDir( folder, next);
-  }, (err)=> {
-    if (err) throw new Error(err);
-    callback();
-  });
+  we.exit(callback);
 });
 
 after(function () {
