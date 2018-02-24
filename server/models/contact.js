@@ -47,7 +47,7 @@ module.exports = function contactModel(we) {
           return we.db.models.contact
           .findAll({
             where: {
-              $or: [
+              [we.Op.or]: [
                 { from: userId },
                 { to: userId }
               ],
@@ -81,7 +81,7 @@ module.exports = function contactModel(we) {
           return we.db.models.contact
           .findOrCreate({
             where: {
-              $or: [{
+              [we.Op.or]: [{
                 from: ops.from,
                 to: ops.to
               },{
@@ -105,7 +105,7 @@ module.exports = function contactModel(we) {
           we.db.models.contact
           .findOne({
             where: {
-              $or: [{
+              [we.Op.or]: [{
                 from: uid,
                 to: contactId
               },{
@@ -139,7 +139,7 @@ module.exports = function contactModel(we) {
         // getUserContacts: function getUserContacts(uid, callback){
         //   we.db.models.contact.findAll({
         //     where: {
-        //       $or: [{
+        //       [we.Op.or]: [{
         //         from: uid,
         //       },{
         //         to: uid

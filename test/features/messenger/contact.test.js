@@ -50,7 +50,7 @@ describe('contactFeature', function() {
       .destroy({
         where: {
           id: {
-            $ne: null
+            [we.Op.ne]: null
           }
         }
       })
