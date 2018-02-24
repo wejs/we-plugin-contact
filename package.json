@@ -2,8 +2,10 @@
   "name": "we-plugin-contact",
   "description": "We.js contact plugin",
   "version": "1.0.0",
-  "license": "MIT",
   "main": "lib/index.js",
+  "license": "MIT",
+  "homepage": "https://github.com/wejs/we-plugin-contact",
+  "author": "Alberto Souza <contato@albertosouza.net>",
   "dependencies": {},
   "devDependencies": {
     "express-mysql-session": "^1.2.3",
@@ -11,15 +13,14 @@
     "istanbul": "^0.4.5",
     "jscs": "^3.0.7",
     "jshint": "^2.9.5",
-    "mocha": "^4.0.1",
-    "mysql": "^2.15.0",
-    "rimraf": "^2.6.2",
+    "mocha": "^5.0.1",
+    "mysql2": "^1.5.2",
     "supertest": "^3.0.0",
-    "we-core": "^1.12.15",
-    "we-test-tools": "^0.3.19",
-    "we-plugin-auth": "^1.3.1",
+    "we-core": "^2",
     "we-plugin-acl": "^1.2.11",
-    "we-plugin-user": "^1.1.8"
+    "we-plugin-auth": "^2",
+    "we-plugin-user": "^2",
+    "we-test-tools": "^0.3.19"
   },
   "engines": {
     "node": ">=0.10.0"
