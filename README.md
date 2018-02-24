@@ -1,6 +1,6 @@
 # We.js contact plugin
 
-> User contact association plugin
+User contact association plugin
 
 ## Routes
 
@@ -32,3 +32,7 @@
 ## License
 
 MIT
+
+## Sponsored by
+
+- Linky Systems: https://linkysystems.com
